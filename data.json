@@ -1,0 +1,20 @@
+[
+  {
+    "source": ["hello-world"],
+    "detail-type": ["orders"],
+    "detail": {
+      "name": [{ "prefix": "manoj" }]
+    }
+  },
+  {
+    "version": "0",
+    "id": "c4730f97-9548-b8a2-4f01-03b70f60fffb",
+    "detail-type": "patient-absent",
+    "source": "patient-app",
+    "account": "885121665536",
+    "time": "2022-09-03T17:50:44Z",
+    "region": "us-east-1",
+    "resources": [],
+    "detail": { "id": "101", "name": "manoj fernando" }
+  }
+]

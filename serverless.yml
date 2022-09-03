@@ -1,0 +1,40 @@
+service: events-demo
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action: events:PutEvents
+          Resource: !GetAtt EventBus.Arn
+
+custom:
+  name: events
+
+functions:
+  addEvent:
+    handler: functions/addEvent.handler
+    environment:
+      eventBusName: !Ref EventBus
+    events:
+      - http:
+          path: /
+          method: post
+  processEvent:
+    handler: functions/processEvent.handler
+    environment:
+      eventBusName: !Ref EventBus
+    events:
+      - http:
+          path: /
+          method: post
+
+# you can add CloudFormation resource templates here
+resources:
+  Resources: ${file(resources.yml)}
+  Outputs:
+    EventBusName:
+      Value: !Ref EventBus

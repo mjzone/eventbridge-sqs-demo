@@ -1,0 +1,43 @@
+# Creating the eventbus
+EventBus:
+  Type: AWS::Events::EventBus
+  Properties:
+    Name: sensor_eventbus_${sls:stage}
+
+# Creating the target SQS queue
+EventBusTargetSQS:
+  Type: AWS::SQS::Queue
+  Properties:
+    QueueName: sensor_eventbus_target_sqs_${sls:stage}
+
+# Creating the eventbus rule to send events to the SQS target
+EventBusTargetSQSRule:
+  Type: AWS::Events::Rule
+  Properties:
+    EventBusName: !Ref EventBus
+    EventPattern:
+      source:
+        - "patient-app"
+      detail-type:
+        - "patient-absent"
+      detail:
+        name:
+          - "prefix": "manoj"
+    Targets:
+      - Arn: !GetAtt EventBusTargetSQS.Arn
+        Id: sensor_eventbus_target_sqs_rule
+
+# Creating the IAM policy at Event bridge bus to communicate with SQS
+EventBusSQSPolicy:
+  Type: AWS::SQS::QueuePolicy
+  Properties:
+    Queues:
+      - !Ref EventBusTargetSQS
+    PolicyDocument:
+      Statement:
+        Action:
+          - "SQS:*"
+        Effect: Allow
+        Resource: !GetAtt EventBusTargetSQS.Arn
+        Principal:
+          Service: events.amazonaws.com
