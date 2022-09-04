@@ -9,6 +9,15 @@ EventBusTargetSQS:
   Type: AWS::SQS::Queue
   Properties:
     QueueName: sensor_eventbus_target_sqs_${sls:stage}
+    RedrivePolicy:
+      deadLetterTargetArn: !GetAtt EventBusDLQ.Arn
+      maxReceiveCount: 1
+
+# Creating the DLQ queue
+EventBusDLQ:
+  Type: AWS::SQS::Queue
+  Properties:
+    QueueName: sensor_eventbus_dlq_${sls:stage}
 
 # Creating the eventbus rule to send events to the SQS target
 EventBusTargetSQSRule:

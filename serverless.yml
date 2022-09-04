@@ -10,6 +10,9 @@ provider:
         - Effect: Allow
           Action: events:PutEvents
           Resource: !GetAtt EventBus.Arn
+        - Effect: Allow
+          Action: sqs:*
+          Resource: !GetAtt EventBusTargetSQS.Arn
 
 custom:
   name: events
@@ -28,11 +31,11 @@ functions:
     environment:
       eventBusName: !Ref EventBus
     events:
-      - http:
-          path: /
-          method: post
+      - sqs:
+          arn: !GetAtt EventBusTargetSQS.Arn
+          batchSize: 10
+          functionResponseType: "ReportBatchItemFailures"
 
-# you can add CloudFormation resource templates here
 resources:
   Resources: ${file(resources.yml)}
   Outputs:
